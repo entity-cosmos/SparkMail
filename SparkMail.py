@@ -27,7 +27,7 @@ def submitact():
         server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
         #Connecting google account to gmail via server.login
         server.login(usId.get(),pscode.get())
-        server.sendmail("srajanbshetty@gmail.com",Usermail.get(),inp)
+        server.sendmail(usId.get(),Usermail.get(),inp)
         print("Mail sent successfully\n")          
         #popup window to displays message of sending email
         messagebox.showinfo("Attention","Your Mail has been sent successfully.")
