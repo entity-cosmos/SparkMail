@@ -5,95 +5,112 @@
     Thankyou for the support'''
     
 import re
-from email import message
 import smtplib
 import tkinter as tk
 from tkinter import *
 from tkinter import messagebox
-from turtle import right
+from dotenv import load_dotenv
+load_dotenv()
+import os
 
-#valcheck stores the correct email id format
+mail_id = os.getenv("mail_id")
+password = os.getenv("app_password")
+
 valcheck = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
 
-#submitact is send mail buttons click event
 def submitact():  
-    #Here email validation and sending of mail to respective destination
-    #validation of email id takes place
-    if(re.fullmatch(valcheck, Usermail.get())):
-        inp = msg.get(1.0, "end-1c")
+    sender_name = sender_name_entry.get()
+    sender_email = sender_email_entry.get()
+    recipient_name = recipient_name_entry.get()
+    recipient_email = recipient_email_entry.get()
+    subject = subject_entry.get()
+    message_body = msg.get(1.0, "end-1c")
+
+    if re.fullmatch(valcheck, sender_email) and re.fullmatch(valcheck, recipient_email):
         print("Valid Email")
-        #after successfull validation, sendmail takes From, To and Message to send mail
-        #Setting SMTP server to gmail.com
         server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
-        #Connecting google account to gmail via server.login
-        server.login(usId.get(),pscode.get())
-        server.sendmail(usId.get(),Usermail.get(),inp)
+        #use mail id and password from .env file
+        server.login(mail_id, password)
+
+        email_content = f"From: {sender_name} <{sender_email}>\n"
+        email_content += f"To: {recipient_name} <{recipient_email}>\n"
+        email_content += f"Subject: {subject}\n\n"
+        email_content += message_body
+
+        server.sendmail(sender_email, recipient_email, email_content)
         print("Mail sent successfully\n")          
-        #popup window to displays message of sending email
-        messagebox.showinfo("Attention","Your Mail has been sent successfully.")
-        #clearing the entry
-        Usermail.delete(0, END)
-        usId.delete(0, END)
-        pscode.delete(0, END)
-        msg.delete('1.0', END)
-        #loging out of gmail
+        messagebox.showinfo("Attention", "Your Mail has been sent successfully.")
         server.quit()
+        #clear the fields
+        sender_name_entry.delete(0, END)
+        sender_email_entry.delete(0, END)
+        recipient_name_entry.delete(0, END)
+        recipient_email_entry.delete(0, END)
+        subject_entry.delete(0, END)
+        msg.delete(1.0, END)
     else:
-        #popup window to show invalid email id
-        messagebox.showinfo("Caution","Enter the valid mail")
-         
-#root window 
+        messagebox.showinfo("Caution", "Enter valid email addresses")
+
 root = Tk()
 root.geometry("400x500")
 root.title("Spark Mail")
-root['background']='#1B1A17'
-pho=PhotoImage(file="win.png")
-#heading
+root['background'] = '#1B1A17'
+pho = PhotoImage(file="win.png")
+
 rr = tk.Label(root, text="Email Sender")
-rr.place(x=115,y=25)
-rr.placeholder=0
-rr.configure(foreground="#F0A500",background="#1B1A17",font=("Helvetica",18,"bold"))
+rr.place(x=115, y=25)
+rr.placeholder = 0
+rr.configure(foreground="#F0A500", background="#1B1A17", font=("Helvetica", 18, "bold"))
 
-From = tk.Label(root, text ="From :")
-From.place(x = 70, y = 125)
-From.configure(foreground="#F0A500",background="#1B1A17")
+# Entry fields for sender's information
+sender_name_label = tk.Label(root, text="Your Name:")
+sender_name_label.place(x=70, y=65)
+sender_name_label.configure(foreground="#F0A500", background="#1B1A17")
+sender_name_entry = tk.Entry(root, width=35)
+sender_name_entry.place(x=200, y=65, width=150)
+sender_name_entry.configure(foreground="#F0A500", background="#1B1A17")
 
-usId = tk.Entry(root, width = 35)
-usId.place(x = 200, y = 125, width = 150)
-usId.configure(foreground="#F0A500",background="#1B1A17")
+sender_email_label = tk.Label(root, text="Your Email:")
+sender_email_label.place(x=70, y=95)
+sender_email_label.configure(foreground="#F0A500", background="#1B1A17")
+sender_email_entry = tk.Entry(root, width=35)
+sender_email_entry.place(x=200, y=95, width=150)
+sender_email_entry.configure(foreground="#F0A500", background="#1B1A17")
 
-ps = tk.Label(root, text ="Password :")
-ps.place(x = 70, y = 185)
-ps.configure(foreground="#F0A500",background="#1B1A17")
+# Entry fields for recipient's information
+recipient_name_label = tk.Label(root, text="Recipient's Name:")
+recipient_name_label.place(x=70, y=125)
+recipient_name_label.configure(foreground="#F0A500", background="#1B1A17")
+recipient_name_entry = tk.Entry(root, width=35)
+recipient_name_entry.place(x=200, y=125, width=150)
+recipient_name_entry.configure(foreground="#F0A500", background="#1B1A17")
 
-pscode = tk.Entry(root, width = 35,show="*")
-pscode.place(x = 200, y = 185, width = 150)
-pscode.configure(foreground="#F0A500",background="#1B1A17")
-#textbox 1
-user = tk.Label(root, text ="To :")
-user.place(x = 70, y = 245)
-user.configure(foreground="#F0A500",background="#1B1A17")
+recipient_email_label = tk.Label(root, text="Recipient's Email:")
+recipient_email_label.place(x=70, y=155)
+recipient_email_label.configure(foreground="#F0A500", background="#1B1A17")
+recipient_email_entry = tk.Entry(root, width=35)
+recipient_email_entry.place(x=200, y=155, width=150)
+recipient_email_entry.configure(foreground="#F0A500", background="#1B1A17")
 
-#entry 1
-Usermail = tk.Entry(root, width = 35)
-Usermail.place(x = 200, y = 245, width = 150)
-Usermail.configure(foreground="#F0A500",background="#1B1A17")
+# Entry field for the subject
+subject_label = tk.Label(root, text="Subject:")
+subject_label.place(x=70, y=185)
+subject_label.configure(foreground="#F0A500", background="#1B1A17")
+subject_entry = tk.Entry(root, width=35)
+subject_entry.place(x=200, y=185, width=150)
+subject_entry.configure(foreground="#F0A500", background="#1B1A17")
 
-#textbox 2
-mail = tk.Label(root, text ="Message :")
-mail.place(x = 70, y = 305)
-mail.configure(foreground="#F0A500",background="#1B1A17")
+# Entry field for the message
+msg_label = tk.Label(root, text="Message:")
+msg_label.place(x=70, y=215)
+msg_label.configure(foreground="#F0A500", background="#1B1A17")
+msg = tk.Text(root, width=35)
+msg.place(x=200, y=215, width=150, height=50)
+msg.configure(foreground="#F0A500", background="#1B1A17")
 
+# Button to send the email
+submitbtn = tk.Button(root, text="Send Mail", command=submitact, border=0)
+submitbtn.place(x=145, y=275, width=130)
+submitbtn.configure(foreground="black", background="#116530", image=pho, compound="right")
 
-#entry 2
-msg = tk.Text(root, width = 35)
-msg.place(x = 200, y = 295, width = 150, height = 50)
-msg.configure(foreground="#F0A500",background="#1B1A17")
-
-#button
-submitbtn = tk.Button(root, text="    Send Mail", command = submitact,border=0)
-submitbtn.place(x = 145, y = 375, width = 130)
-submitbtn.configure(foreground="black",background="#116530",image=pho,compound="right")
-
-#closing the mainloop
 root.mainloop()
